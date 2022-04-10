@@ -1,0 +1,19 @@
+{
+  "name": "mlbreview-bot",
+  "version": "1.0.0",
+  "description": "Discord Bot to manage mlb reviews",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AxBolduc/mlbreview-bot.git"
+  },
+  "author": "AxBolduc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AxBolduc/mlbreview-bot/issues"
+  },
+  "homepage": "https://github.com/AxBolduc/mlbreview-bot#readme"
+}
