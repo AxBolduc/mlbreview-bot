@@ -9,6 +9,8 @@ export class Replay {
 
   /**
    * sendReplayMessage
+   * Generates and sends the interactive message to the channel given
+   * @param channel Channel to send the interactive message to
    */
   public async sendReplayMessage(channel: TextChannel) {
     const message = await channel.send(this.tweetURL.toString());

@@ -33,32 +33,33 @@ const client: Client = new Client({
 
 client.once("ready", async () => {
   const generalChannel: TextChannel = (await client.channels.fetch(
-    "962743660968022046"
+      process.env.DISCORD_CHANNEL_ID!
   )) as TextChannel;
-  const rules = await roClient.v2.streamRules();
-  if (rules.data?.length) {
-    await twitterClient.v2.updateStreamRules({
-      delete: { ids: rules.data.map((rule) => rule.id) },
-    });
-  }
+  // const rules = await roClient.v2.streamRules();
+  // if (rules.data?.length) {
+  //   await twitterClient.v2.updateStreamRules({
+  //     delete: { ids: rules.data.map((rule) => rule.id) },
+  //   });
+  // }
 
-  await twitterClient.v2.updateStreamRules({
-    add: [{ value: "from:MLBReplays" }, { value: "TalkinBaseball_" }],
-  });
+  // await twitterClient.v2.updateStreamRules({
+  //   add: [{ value: "from:MLBReplays" }],
+  //   // add: [{ value: "from:MLBReplays" }, { value: "TalkinBaseball_" }],
+  // });
 
-  const stream = await twitterClient.v2.searchStream({
-    "tweet.fields": ["id", "text", "attachments", "created_at", "entities"],
-  });
-  stream.autoReconnect = true;
+  // const stream = await twitterClient.v2.searchStream({
+  //   "tweet.fields": ["id", "text", "attachments", "created_at", "entities"],
+  // });
+  // stream.autoReconnect = true;
 
-  stream.on(ETwitterStreamEvent.Data, async (tweet) => {
-    console.log("Tweet found");
-    if (tweet.data.entities?.urls != null) {
-      const replay = new Replay(tweet.data.entities?.urls[0].url.toString()!);
+  // stream.on(ETwitterStreamEvent.Data, async (tweet) => {
+  //   console.log("Tweet found");
+  //   if (tweet.data.entities?.urls != null) {
+  //     const replay = new Replay(tweet.data.entities?.urls[0].url.toString()!);
 
-      replay.sendReplayMessage(generalChannel);
-    }
-  });
+  //     replay.sendReplayMessage(generalChannel);
+  //   }
+  // });
 
   await client.initApplicationCommands({});
   await client.initApplicationPermissions();
