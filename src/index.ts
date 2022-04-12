@@ -1,15 +1,20 @@
 import {
   AnyChannel,
-  CategoryChannel,
-  Channel,
   Intents,
-  Status,
+  Interaction,
+  Message,
   TextChannel,
 } from "discord.js";
 import { Client } from "discordx";
 import "reflect-metadata";
 import "dotenv/config";
-import { ETwitterStreamEvent, TwitterApi } from "twitter-api-v2";
+import {
+  ETwitterStreamEvent,
+  TweetSearchAllV2Paginator,
+  TwitterApi,
+} from "twitter-api-v2";
+import { dirname, importx } from "@discordx/importer";
+import { Replay } from "./replay.js";
 
 const twitterClient = new TwitterApi(process.env.TWITTER_BEARER_TOKEN!);
 const roClient = twitterClient.readOnly;
@@ -27,6 +32,9 @@ const client: Client = new Client({
 });
 
 client.once("ready", async () => {
+  const generalChannel: TextChannel = (await client.channels.fetch(
+    "962743660968022046"
+  )) as TextChannel;
   const rules = await roClient.v2.streamRules();
   if (rules.data?.length) {
     await twitterClient.v2.updateStreamRules({
@@ -35,22 +43,39 @@ client.once("ready", async () => {
   }
 
   await twitterClient.v2.updateStreamRules({
-    add: [{ value: "from:MLBReplays" }],
+    add: [{ value: "from:MLBReplays" }, { value: "TalkinBaseball_" }],
   });
 
   const stream = await twitterClient.v2.searchStream({
-      'tweet.fields': ["id", "text", "attachments", "created_at", "entities"]
-  })
+    "tweet.fields": ["id", "text", "attachments", "created_at", "entities"],
+  });
   stream.autoReconnect = true;
 
-  stream.on(ETwitterStreamEvent.Data,async (tweet) => {
-      console.log("Tweet found");
-      console.log(tweet.data.entities?.urls[0].url);
-  })
+  stream.on(ETwitterStreamEvent.Data, async (tweet) => {
+    console.log("Tweet found");
+    if (tweet.data.entities?.urls != null) {
+      const replay = new Replay(tweet.data.entities?.urls[0].url.toString()!);
 
+      replay.sendReplayMessage(generalChannel);
+    }
+  });
 
-  await client.initApplicationCommands();
+  await client.initApplicationCommands({});
   await client.initApplicationPermissions();
 });
 
-client.login(process.env.BOT_TOKEN!);
+client.on("interactionCreate", (interaction: Interaction) => {
+  client.executeInteraction(interaction);
+});
+
+client.on("messageCreate", async (message: Message) => {
+  client.executeCommand(message);
+});
+
+async function start() {
+  await importx(dirname(import.meta.url) + "/commands/**/*.{ts,js}");
+
+  await client.login(process.env.BOT_TOKEN!);
+}
+
+start();

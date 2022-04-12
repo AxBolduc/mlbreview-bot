@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/AxBolduc/mlbreview-bot#readme",
   "dependencies": {
+    "@discordx/importer": "^1.1.2",
     "discord.js": "^13.6.0",
     "discordx": "^9.5.2",
     "dotenv": "^16.0.0",
